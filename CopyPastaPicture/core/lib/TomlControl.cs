@@ -24,12 +24,12 @@ public class TomlControl
             TomlTable toml = new TomlTable
             {
                 ["Lang"] = "en-US",
-                ["Theme"] = "Dark",
                 ["WindowResolution"] =
                 {
                     ["Width"] = 800,
                     ["Height"] = 400
-                }
+                },
+                ["CliKey"] = "Ctrl+Shift+P",
             };
 
             using (StreamWriter writer = File.CreateText("./Data/Setting.toml"))
@@ -37,12 +37,35 @@ public class TomlControl
                 toml.WriteTo(writer);
                 writer.Flush();
             }
+            _logController.InfoLog("Initialize Toml");
         }
         catch (Exception e)
         {
+            _logController.ErrorLog($"Initialize Toml Error : {e}");
             Console.WriteLine(e);
             throw;
         }
-        _logController.InfoLog("Initialize Toml");
+    }
+
+    public string LanguageName()
+    {
+        try
+        {
+            using (StreamReader reader = File.OpenText(TomlControl.TomlMain.TomlDataDir))
+            {
+                TomlTable table = TOML.Parse(reader);
+
+                var language = table["Lang"];
+                
+                _logController.InfoLog("SetWindowResolution Success");
+                return language;
+            }
+        }
+        catch (Exception e)
+        {
+            _logController.ErrorLog($"SetWindowResolution Error : {e}");
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

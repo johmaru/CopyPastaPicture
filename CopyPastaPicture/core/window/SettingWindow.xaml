@@ -7,8 +7,9 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         Title="SettingWindow" d:Height="450" d:Width="800">
     <Grid>
-        
+        <Frame x:Name="Frame" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>

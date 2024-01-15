@@ -1,0 +1,31 @@
+﻿<Page x:Class="CopyPastaPicture.core.page.SettingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:CopyPastaPicture.core.page"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      mc:Ignorable="d"
+      Title="SettingPage" d:Height="450" d:Width="800">
+    
+    <Page.Resources>
+        <!-- <Style TargetType="ui:なにかしら"> -->
+        <!--     <Setter Property="Margin" -->
+        <!--             Value="0,5" /> -->
+        <!-- </Style> -->
+    </Page.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="1">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Right">
+                <Button x:Name="SaveButton" Content="" Width="100"/>
+                <Button x:Name="CancelButton" Content="" Width="100" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

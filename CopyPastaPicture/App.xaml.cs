@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using CopyPastaPicture.core;
+using CopyPastaPicture.core.lang;
 using CopyPastaPicture.core.lib;
 using CopyPastaPicture.core.window;
 using Application = System.Windows.Application;
@@ -20,15 +21,31 @@ namespace CopyPastaPicture
     {
         private System.Windows.Forms.ContextMenuStrip _menu = new();
         private System.Windows.Forms.NotifyIcon _notifyIcon = new();
+        private TomlControl _tomlControl = new();
         private LogController _logController = new();
         protected override void OnStartup(StartupEventArgs e)
         {
             // ./core/lib/LogController.cs のInitialize
             _logController.Initialize();
-            //タクストレイのコード
-            _menu.Items.Add("Open CopyPastaPicture", null, (obj, e) => { new MainWindow().Show(); });
-            _menu.Items.Add("Setting", null, (obj, e) => { new SettingWindow().Show(); });
-            _menu.Items.Add("Exit", null, (obj, e) => { Application.Current.Shutdown(); });
+            // ./core/lib/TomlControl.cs のInitialize
+            _tomlControl.Initialize();
+
+            switch (_tomlControl.LanguageName())
+            {
+                case "en-US":
+                    //タクストレイのコード
+                    _menu.Items.Add(EnLanguage.Open, null, (obj, e) => { new MainWindow().Show(); });
+                    _menu.Items.Add(EnLanguage.Setting, null, (obj, e) => { new SettingWindow().Show(); });
+                    _menu.Items.Add(EnLanguage.Exit, null, (obj, e) => { Application.Current.Shutdown(); });
+                    break;
+                case "ja-JP":
+                    
+                    //タクストレイのコード
+                    _menu.Items.Add(JaLanguage.Open, null, (obj, e) => { new MainWindow().Show(); });
+                    _menu.Items.Add(JaLanguage.Setting, null, (obj, e) => { new SettingWindow().Show(); });
+                    _menu.Items.Add(JaLanguage.Exit, null, (obj, e) => { Application.Current.Shutdown(); });
+                    break;
+            }
     
             _notifyIcon.Visible = true;
             _notifyIcon.Icon = new System.Drawing.Icon("./resources/ico/Pastaicon.ico");

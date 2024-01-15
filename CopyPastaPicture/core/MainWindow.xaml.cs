@@ -13,7 +13,6 @@ namespace CopyPastaPicture.core
     /// </summary>
     public partial class MainWindow : Window
     {
-        private TomlControl _tomlControl = new();
         private LogController _logController = new();
         private int _width;
         private int _height;
@@ -27,8 +26,6 @@ namespace CopyPastaPicture.core
 
         private void Initialize()
         {
-            // ./core/lib/TomlControl.cs のInitialize
-            _tomlControl.Initialize();
             _logController.InfoLog("Initialize MainWindow");
         }
 
