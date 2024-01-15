@@ -14,7 +14,6 @@ public partial class MainPage : Page
 
     private void Initialize()
     {
-        _logController.Initialize();
         _logController.InfoLog("Initialize MainPage");
     }
 }

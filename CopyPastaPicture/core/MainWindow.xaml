@@ -6,8 +6,11 @@
         xmlns:local="clr-namespace:CopyPastaPicture"
         mc:Ignorable="d"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        WindowStartupLocation="CenterScreen"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="MainWindow" d:Height="450" d:Width="800">
+        Title="MainWindow" d:Height="450" d:Width="800"
+        Closing="MainWindow_OnClosing"
+        >
     <Grid>
         <Frame x:Name="Frame" NavigationUIVisibility="Hidden"/>
     </Grid>
