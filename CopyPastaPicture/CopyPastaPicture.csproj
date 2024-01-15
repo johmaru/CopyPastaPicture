@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ModernWpfUI" Version="0.9.7-preview.2" />
+      <PackageReference Include="NLog" Version="5.2.8" />
+      <PackageReference Include="NLog.Extensions.Logging" Version="5.3.8" />
+      <PackageReference Include="Tommy" Version="3.1.2" />
+    </ItemGroup>
+
+</Project>
