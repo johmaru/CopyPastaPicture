@@ -21,10 +21,25 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         
+        <!-- 設定項目用グリッド -->
+        <Grid Grid.Row="0">
+            <ui:ScrollViewerEx x:Name="ScrollViewerEx">
+                <ui:SimpleStackPanel Orientation="Vertical">
+                    <Label x:Name="TitleLabel" Content="" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center"/>
+                    <Label x:Name="LanguageLabel" Content="" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center"/>
+                    <ComboBox x:Name="LanguageCombo" Text="" HorizontalAlignment="Center" Loaded="LanguageCombo_OnLoaded">
+                        <ComboBoxItem x:Name="EnglishComboBoxItem" Content="" Selected="EnglishComboBoxItem_OnSelected"/>
+                        <ComboBoxItem x:Name="JapaneseComboBoxItem" Content="" Selected="JapaneseComboBoxItem_OnSelected"/>
+                    </ComboBox>
+                </ui:SimpleStackPanel>
+            </ui:ScrollViewerEx>
+        </Grid>
+        
+            <!-- キャンセルとセーブボタン用グリッド -->
         <Grid Grid.Row="1">
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Right">
-                <Button x:Name="SaveButton" Content="" Width="100"/>
-                <Button x:Name="CancelButton" Content="" Width="100" />
+                <Button x:Name="SaveButton" Content="" VerticalAlignment="Bottom" Width="100"/>
+                <Button x:Name="CancelButton" Content="" VerticalAlignment="Bottom" Width="100"/>
             </StackPanel>
         </Grid>
     </Grid>

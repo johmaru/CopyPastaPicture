@@ -29,7 +29,15 @@ namespace CopyPastaPicture
             _logController.Initialize();
             // ./core/lib/TomlControl.cs のInitialize
             _tomlControl.Initialize();
-
+            
+            LoadNotifyIcon();
+            
+            base.OnStartup(e);
+        }
+        
+        public void LoadNotifyIcon()
+        {
+            _menu.Items.Clear();
             switch (_tomlControl.LanguageName())
             {
                 case "en-US":
@@ -51,8 +59,6 @@ namespace CopyPastaPicture
             _notifyIcon.Icon = new System.Drawing.Icon("./resources/ico/Pastaicon.ico");
             _notifyIcon.Text = "CopyPastaPicture";
             _notifyIcon.ContextMenuStrip = _menu;
-            
-            base.OnStartup(e);
         }
 
         protected override void OnExit(ExitEventArgs e)
