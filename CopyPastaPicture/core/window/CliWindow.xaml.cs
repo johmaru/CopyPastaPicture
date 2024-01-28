@@ -156,7 +156,7 @@ public partial class CliWindow : Window
                                             
                                         Directory.CreateDirectory($"./Data/Image/{imgCommandReplaced}");
                                         if (File.Exists($"./Data/Image/{imgCommandReplaced}")) return;
-                                        fi.MoveTo($"./Data/Image/{imgCommandReplaced}/{path}");
+                                        fi.CopyTo(($"./Data/Image/{imgCommandReplaced}/{path}"));
                                         _logController.InfoLog($"File Move Success to ./Data/Image/{path}/{imgCommandReplaced}");
                                     }
                                     catch (Exception e)
@@ -187,7 +187,7 @@ public partial class CliWindow : Window
                                             
                                         Directory.CreateDirectory($"./Data/Image/{imgCommandReplaced}");
                                         if (File.Exists($"./Data/Image/{imgCommandReplaced}")) return;
-                                        fi.MoveTo($"./Data/Image/{imgCommandReplaced}/{path}");
+                                        fi.CopyTo(($"./Data/Image/{imgCommandReplaced}/{path}"));
                                         _logController.InfoLog($"File Move Success to ./Data/Image/{path}/{imgCommandReplaced}");
                                     }
                                     catch (Exception e)
