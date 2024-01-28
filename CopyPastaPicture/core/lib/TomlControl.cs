@@ -30,6 +30,11 @@ public class TomlControl
                     ["Height"] = 400
                 },
                 ["CliKey"] = "Ctrl+Shift+P",
+                ["CliWindowResolution"] =
+                {
+                    ["Width"] = 400,
+                    ["Height"] = 100
+                }
             };
 
             using (StreamWriter writer = File.CreateText("./Data/Setting.toml"))
