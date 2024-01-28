@@ -1,4 +1,4 @@
-# CopyPastaPicture is a useful software for instantly copying your favorite images and Chat Template
+# CopyPastaPicture is a useful software for instantly copying your favorite images and chat template
 
 For the Contributor
 
