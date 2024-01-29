@@ -27,4 +27,6 @@ public struct JaLanguage
     public const  string Help = "ヘルプ";
     public const string CliMode = "Cliモード";
     public const string File = "ファイル";
+    public const string SimpleOpen = "開く";
+    public const string SimpleCopy = "コピー";
 }

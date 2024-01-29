@@ -21,4 +21,11 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="resources\ico\File_Explorer_23583.ico" />
+      <Resource Include="resources\ico\File_Explorer_23583.ico" />
+      <None Remove="resources\ico\picture_photo_image_icon_131252.ico" />
+      <Resource Include="resources\ico\picture_photo_image_icon_131252.ico" />
+    </ItemGroup>
+
 </Project>

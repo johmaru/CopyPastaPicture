@@ -27,4 +27,6 @@ public struct EnLanguage
     public const string Help = "Help";
     public const string CliMode = "Cli Mode";
     public const string File = "File";
+    public const string SimpleOpen = "Open";
+    public const string SimpleCopy = "Copy";
 }

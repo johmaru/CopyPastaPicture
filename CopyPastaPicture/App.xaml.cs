@@ -30,6 +30,7 @@ namespace CopyPastaPicture
     {
         private System.Windows.Forms.ContextMenuStrip _menu = new();
         public MainPage MainPageInstance { get; set; }
+        private MainWindow MainWindowInstance { get; set; }
         private System.Windows.Forms.NotifyIcon _notifyIcon = new();
         private TomlControl _tomlControl = new();
         private LogController _logController = new();
@@ -49,6 +50,7 @@ namespace CopyPastaPicture
             
             base.OnStartup(e);
             MainPageInstance = new MainPage();
+            MainWindowInstance = new MainWindow();
         }
         
         public void LoadNotifyIcon()
@@ -80,7 +82,8 @@ namespace CopyPastaPicture
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                        new MainWindow().Show(); 
+                    if (Current.Windows.OfType<MainWindow>().Any(x => x.IsActive))return;
+                    MainWindowInstance.Show();
                 }
             };
             _notifyIcon.ContextMenuStrip = _menu;

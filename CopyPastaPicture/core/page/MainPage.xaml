@@ -10,8 +10,10 @@
     
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="10"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
@@ -19,17 +21,31 @@
         </Grid.ColumnDefinitions>
         
         <Grid Grid.Row="0" Grid.Column="0">
-        <DockPanel>
-            <Menu DockPanel.Dock="Top">
-                <MenuItem x:Name="FileItem" Header="" FontWeight="Bold" FontSize="17">
-                    <MenuItem x:Name="CliButton" Header="" Click="CliButton_OnClick"/>
-                    <MenuItem x:Name="SettingButton" Header="" Click="SettingButton_OnClick"/>
-                    <MenuItem x:Name="HelpButton" Header="" Click="HelpButton_OnClick"/>
-                    <MenuItem x:Name="ExitButton" Header="" Click="ExitButton_OnClick"/>
-                </MenuItem>
-            </Menu>
-        </DockPanel>
+            <DockPanel>
+                <Menu DockPanel.Dock="Top">
+                    <MenuItem x:Name="FileItem" Header="" FontWeight="Bold" FontSize="17">
+                        <MenuItem x:Name="CliButton" Header="" Click="CliButton_OnClick"/>
+                        <MenuItem x:Name="SettingButton" Header="" Click="SettingButton_OnClick"/>
+                        <MenuItem x:Name="HelpButton" Header="" Click="HelpButton_OnClick"/>
+                        <MenuItem x:Name="ExitButton" Header="" Click="ExitButton_OnClick"/>
+                    </MenuItem>
+                </Menu>
+            </DockPanel>
         </Grid>
-    </Grid>
-    
+        
+        <Grid Grid.Row="2" Grid.Column="0">
+            <ui:SimpleStackPanel>
+                <TreeView x:Name="FileView">
+                    
+                </TreeView>
+            </ui:SimpleStackPanel>
+        </Grid>
+        
+        <Grid Grid.Row="2" Grid.Column="0">
+            <ui:SimpleStackPanel Orientation="Horizontal">
+                
+            </ui:SimpleStackPanel>
+        </Grid>
+        
+     </Grid>
 </Page>
