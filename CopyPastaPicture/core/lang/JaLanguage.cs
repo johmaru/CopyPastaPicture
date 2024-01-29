@@ -22,7 +22,9 @@ public struct JaLanguage
     public const string CreateImageDirTitle = "画像ディレクトリの作成";
     public const string AskCommandName = "コマンド名を入力してください";
     public const string UnknownName = "不明な名前";
-    public const string OpenCliButton = "Cliを開く";
-    public const string OpenSettingButton = "設定を開く";
+    public const string OpenCliButton = "CLIモード";
+    public const string OpenSettingButton = "設定";
     public const  string Help = "ヘルプ";
+    public const string CliMode = "Cliモード";
+    public const string File = "ファイル";
 }

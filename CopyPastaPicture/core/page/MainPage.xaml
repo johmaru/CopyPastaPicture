@@ -10,21 +10,25 @@
     
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
         <Grid Grid.Row="0" Grid.Column="0">
-            <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
-                <Button x:Name="CliButton" Content="" Click="CliButton_OnClick" Height="40" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                <Button x:Name="SettingButton" Content="" Click="SettingButton_OnClick" Height="40" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                <Button x:Name="HelpButton" Content="" Click="HelpButton_OnClick" Height="40" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                <Button x:Name="ExitButton" Content="" Click="ExitButton_OnClick" Height="40" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-            </StackPanel>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem x:Name="FileItem" Header="" FontWeight="Bold" FontSize="17">
+                    <MenuItem x:Name="CliButton" Header="" Click="CliButton_OnClick"/>
+                    <MenuItem x:Name="SettingButton" Header="" Click="SettingButton_OnClick"/>
+                    <MenuItem x:Name="HelpButton" Header="" Click="HelpButton_OnClick"/>
+                    <MenuItem x:Name="ExitButton" Header="" Click="ExitButton_OnClick"/>
+                </MenuItem>
+            </Menu>
+        </DockPanel>
         </Grid>
     </Grid>
     

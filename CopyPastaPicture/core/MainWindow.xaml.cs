@@ -19,6 +19,7 @@ namespace CopyPastaPicture.core
         public MainWindow()
         {
             InitializeComponent();
+            _logController.Initialize();
             Initialize();
             SetWindowResolution();
             NavigateToPage();
@@ -31,7 +32,8 @@ namespace CopyPastaPicture.core
 
         private void NavigateToPage()
         {
-            Frame.NavigationService.Navigate(new MainPage());
+            var mainPage = ((App)Application.Current).MainPageInstance;
+            Frame.NavigationService.Navigate(mainPage);
             _logController.InfoLog("Move NavigateToPage Success");
         }
 

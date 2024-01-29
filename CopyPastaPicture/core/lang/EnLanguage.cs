@@ -22,7 +22,9 @@ public struct EnLanguage
     public const string CreateImageDirTitle = "Create Image Directory";
     public const string AskCommandName = "Please input command name";
     public const string UnknownName = "Unknown Name";
-    public const string OpenCliButton = "Open Cli";
-    public const string OpenSettingButton = "Open Setting";
+    public const string OpenCliButton = "CLI Mode";
+    public const string OpenSettingButton = "Setting";
     public const string Help = "Help";
+    public const string CliMode = "Cli Mode";
+    public const string File = "File";
 }

@@ -14,6 +14,7 @@ using System.Windows.Interop;
 using CopyPastaPicture.core;
 using CopyPastaPicture.core.lang;
 using CopyPastaPicture.core.lib;
+using CopyPastaPicture.core.page;
 using CopyPastaPicture.core.window;
 using Application = System.Windows.Application;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -28,6 +29,7 @@ namespace CopyPastaPicture
     public partial class App : Application
     {
         private System.Windows.Forms.ContextMenuStrip _menu = new();
+        public MainPage MainPageInstance { get; set; }
         private System.Windows.Forms.NotifyIcon _notifyIcon = new();
         private TomlControl _tomlControl = new();
         private LogController _logController = new();
@@ -46,6 +48,7 @@ namespace CopyPastaPicture
             EventManager.RegisterClassHandler(typeof(Window), Window.KeyDownEvent, new KeyEventHandler(OnKeyDown), true);
             
             base.OnStartup(e);
+            MainPageInstance = new MainPage();
         }
         
         public void LoadNotifyIcon()
@@ -56,6 +59,7 @@ namespace CopyPastaPicture
                 case "en-US":
                     //タクストレイのコード
                     _menu.Items.Add(EnLanguage.Open, null, (obj, e) => { new MainWindow().Show(); });
+                    _menu.Items.Add(EnLanguage.OpenCliButton, null, (obj, e) => { new CliWindow().Show(); });
                     _menu.Items.Add(EnLanguage.Setting, null, (obj, e) => { new SettingWindow().Show(); });
                     _menu.Items.Add(EnLanguage.Exit, null, (obj, e) => { Application.Current.Shutdown(); });
                     break;
@@ -63,6 +67,7 @@ namespace CopyPastaPicture
                     
                     //タクストレイのコード
                     _menu.Items.Add(JaLanguage.Open, null, (obj, e) => { new MainWindow().Show(); });
+                    _menu.Items.Add(JaLanguage.OpenCliButton, null, (obj, e) => { new CliWindow().Show(); });
                     _menu.Items.Add(JaLanguage.Setting, null, (obj, e) => { new SettingWindow().Show(); });
                     _menu.Items.Add(JaLanguage.Exit, null, (obj, e) => { Application.Current.Shutdown(); });
                     break;
@@ -71,6 +76,13 @@ namespace CopyPastaPicture
             _notifyIcon.Visible = true;
             _notifyIcon.Icon = new System.Drawing.Icon("./resources/ico/Pastaicon.ico");
             _notifyIcon.Text = "CopyPastaPicture";
+            _notifyIcon.MouseUp += (obj, e) =>
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                        new MainWindow().Show(); 
+                }
+            };
             _notifyIcon.ContextMenuStrip = _menu;
         }
 

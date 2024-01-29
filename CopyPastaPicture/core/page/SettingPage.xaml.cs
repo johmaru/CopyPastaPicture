@@ -16,6 +16,7 @@ public partial class SettingPage : Page
     public SettingPage()
     {
         InitializeComponent();
+        _logController.Initialize();
         LanguageLoaded();
     }
 
@@ -30,6 +31,7 @@ public partial class SettingPage : Page
                 LanguageLabel.Content = EnLanguage.LanguageSetting;
                 EnglishComboBoxItem.Content = EnLanguage.LanguageEnglish;
                 JapaneseComboBoxItem.Content = EnLanguage.LanguageJapanese;
+                CliModeLabel.Content = EnLanguage.CliMode;
                 break;
             case "ja-JP":
                 SaveButton.Content = JaLanguage.save;
@@ -38,13 +40,14 @@ public partial class SettingPage : Page
                 LanguageLabel.Content = JaLanguage.LanguageSetting;
                 EnglishComboBoxItem.Content = JaLanguage.LanguageEnglish;
                 JapaneseComboBoxItem.Content = JaLanguage.LanguageJapanese;
+                CliModeLabel.Content = JaLanguage.CliMode;
                 break;
         }
 
         _initLanguage = _tomlControl.LanguageName();
     }
 
-    private void SaveContent()
+    public void SaveContent()
     {
         //言語設定
         switch (LanguageCombo.SelectedIndex)
@@ -62,6 +65,16 @@ public partial class SettingPage : Page
         //セーブ処理後の処理
         LanguageLoaded();
         ((App)Application.Current).LoadNotifyIcon();
+        var mainPage = ((App)Application.Current).MainPageInstance;
+        mainPage.InitializeLanguage();
+        if (CliModeToggleSwitch.IsOn)
+        {
+            mainPage.ReloadContent(true);
+        }
+        else
+        {
+            mainPage.ReloadContent(false);
+        }
         _logController.InfoLog("JapaneseComboBoxItem Success");
     }
 
@@ -80,14 +93,7 @@ public partial class SettingPage : Page
                 break;
         }
 
-        if (_initLanguage == language)
-        {
-            result = 0;
-        }
-        else
-        {
-            result = 1;
-        }
+        result = _initLanguage == language ? 0 : 1;
         return result;
     }
     
@@ -188,5 +194,65 @@ public partial class SettingPage : Page
     private void SaveButton_OnClick(object sender, RoutedEventArgs e)
     {
         SaveContent();
+    }
+
+    private void CliModeToggleSwitch_OnToggled(object sender, RoutedEventArgs e)
+    {
+        if (CliModeToggleSwitch.IsOn)
+        {
+            try
+            {
+                using (StreamReader reader = new StreamReader(File.OpenRead("./Data/Setting.toml")))
+                {
+                    var toml = TOML.Parse(reader);
+                    toml["CliMode"] = "true";
+                    using (StreamWriter writer = new StreamWriter(File.OpenWrite("./Data/Setting.toml")))
+                    {
+                        toml.WriteTo(writer);
+                        writer.Flush();
+                    }
+                }
+                _logController.InfoLog("SettingCliMode Change Success");
+            }
+            catch (Exception exception)
+            {
+                _logController.ErrorLog($"SettingCliMode Change Error{exception}");
+                throw;
+            }
+        }
+        else
+        {
+            try
+            {
+                using (StreamReader reader = new StreamReader(File.OpenRead("./Data/Setting.toml")))
+                {
+                    var toml = TOML.Parse(reader);
+                    toml["CliMode"] = "false";
+                    using (StreamWriter writer = new StreamWriter(File.OpenWrite("./Data/Setting.toml")))
+                    {
+                        toml.WriteTo(writer);
+                        writer.Flush();
+                    }
+                }
+                _logController.InfoLog("SettingCliMode Change Success");
+            }
+            catch (Exception exception)
+            {
+                _logController.ErrorLog($"SettingCliMode Change Error{exception}");
+                throw;
+            }
+        }
+    }
+
+    private void CliModeToggleSwitch_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (_tomlControl.GetTomlData("CliMode").Equals("true"))
+        {
+            CliModeToggleSwitch.IsOn = true;
+        }
+        else if (_tomlControl.GetTomlData("CliMode").Equals("false"))
+        {
+            CliModeToggleSwitch.IsOn = false;
+        }
     }
 }

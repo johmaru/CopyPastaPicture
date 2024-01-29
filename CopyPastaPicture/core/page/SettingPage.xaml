@@ -31,6 +31,8 @@
                         <ComboBoxItem x:Name="EnglishComboBoxItem" Tag="en-US"/>
                         <ComboBoxItem x:Name="JapaneseComboBoxItem" Tag="ja-JP"/>
                     </ComboBox>
+                    <Label x:Name="CliModeLabel" Content="" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center"/>
+                    <ui:ToggleSwitch x:Name="CliModeToggleSwitch" HorizontalAlignment="Center" Toggled="CliModeToggleSwitch_OnToggled" Loaded="CliModeToggleSwitch_OnLoaded"/>
                 </ui:SimpleStackPanel>
             </ui:ScrollViewerEx>
         </Grid>

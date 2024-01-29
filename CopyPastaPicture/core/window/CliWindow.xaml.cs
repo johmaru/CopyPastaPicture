@@ -27,6 +27,7 @@ public partial class CliWindow : Window
     public CliWindow()
     {
         InitializeComponent();
+        _logController.Initialize();
         Initialize();
         SetWindowResolution();
         InitializeLanguage();

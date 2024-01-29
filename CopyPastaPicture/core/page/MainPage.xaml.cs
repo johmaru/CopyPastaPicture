@@ -13,6 +13,7 @@ public partial class MainPage : Page
     public MainPage()
     {
         InitializeComponent();
+        _logController.Initialize();
         Initialize();
         InitializeLanguage();
     }
@@ -26,18 +27,25 @@ public partial class MainPage : Page
         switch (_tomlControl.LanguageName())
         {
             case "en-US":
-                CliButton.Content = EnLanguage.OpenCliButton;
-                SettingButton.Content = EnLanguage.OpenSettingButton;
-                ExitButton.Content = EnLanguage.Exit;
-                HelpButton.Content = EnLanguage.Help;
+                CliButton.Header = EnLanguage.OpenCliButton;
+                SettingButton.Header = EnLanguage.OpenSettingButton;
+                ExitButton.Header = EnLanguage.Exit;
+                HelpButton.Header = EnLanguage.Help;
+                FileItem.Header = EnLanguage.File;
                 break;
             case "ja-JP":
-                CliButton.Content = JaLanguage.OpenCliButton;
-                SettingButton.Content = JaLanguage.OpenSettingButton;
-                ExitButton.Content = JaLanguage.Exit;
-                HelpButton.Content = JaLanguage.Help;
+                CliButton.Header = JaLanguage.OpenCliButton;
+                SettingButton.Header = JaLanguage.OpenSettingButton;
+                ExitButton.Header = JaLanguage.Exit;
+                HelpButton.Header = JaLanguage.Help;
+                FileItem.Header = JaLanguage.File;
                 break;
         }
+    }
+
+    public void ReloadContent(bool cliCheck)
+    {
+        CliButton.Visibility = cliCheck is true ? Visibility.Visible : Visibility.Hidden;
     }
 
     private void CliButton_OnClick(object sender, RoutedEventArgs e)
@@ -69,6 +77,7 @@ public partial class MainPage : Page
 
     private void ExitButton_OnClick(object sender, RoutedEventArgs e)
     {
-        Application.Current.Shutdown();
+        var parent = Window.GetWindow(this);
+        parent?.Close();
     }
 }

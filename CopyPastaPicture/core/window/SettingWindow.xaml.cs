@@ -15,6 +15,7 @@ public partial class SettingWindow : Window
     public SettingWindow()
     {
         InitializeComponent();
+        _logController.Initialize();
         Initialize();
         SetWindowResolution();
         NavigateToPage();
