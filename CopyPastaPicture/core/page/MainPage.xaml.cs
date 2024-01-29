@@ -1,11 +1,21 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using CopyPastaPicture.core.lang;
 using CopyPastaPicture.core.lib;
 using CopyPastaPicture.core.window;
+using ModernWpf.Controls;
+using Application = System.Windows.Application;
+using Clipboard = System.Windows.Clipboard;
+using MessageBox = System.Windows.MessageBox;
+using Orientation = System.Windows.Controls.Orientation;
+using Page = System.Windows.Controls.Page;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace CopyPastaPicture.core.page;
 
@@ -27,6 +37,7 @@ public partial class MainPage : Page
     {
         _logController.InfoLog("Initialize MainPage");
     }
+    
     public void InitializeLanguage()
     {
         switch (_tomlControl.LanguageName())
@@ -49,9 +60,236 @@ public partial class MainPage : Page
         InitializeContent();
     }
 
-    private void InitializeContent()
+    public void InitializeContent()
     {
         FileSearch();
+    }
+
+    private async Task ShowContentDialogAsync(string dir)
+    {
+        switch (_tomlControl.LanguageName())
+        {
+            case "en-US":
+                ContentDialog contentDialog = new ContentDialog
+                {
+                    Title = EnLanguage.CreateImport,
+                    Content = EnLanguage.CreateImport,
+                    PrimaryButtonText = EnLanguage.CreateFolder,
+                    SecondaryButtonText = EnLanguage.ImportPicture,
+                    CloseButtonText = EnLanguage.cancel
+                };
+                ContentDialogResult  result = await contentDialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                            Window window = new Window();
+                            window.Height = 100;
+                            window.Width = 256;
+                             Grid grid = new Grid();
+                            TextBox textBox = new TextBox();
+                            textBox.Height = 32;
+                            textBox.Width = 256;
+                            textBox.Text = EnLanguage.SimpleInputName;
+                            textBox.KeyUp += (obj, e) =>
+                            {
+                                if (e.Key == System.Windows.Input.Key.Enter)
+                                {
+                                    try
+                                    {
+                                        Directory.CreateDirectory(dir + "/" + textBox.Text);
+                                        _logController.InfoLog($"Create Directory Success {dir + "/" + textBox.Text}");
+                                        MessageBox.Show(EnLanguage.CreateDir, EnLanguage.CreateDir, MessageBoxButton.OK);
+                                        ((App)Application.Current).ResetMainPage();
+                                        window.Close();
+                                    }
+                                    catch (Exception exception)
+                                    {
+                                        _logController.ErrorLog($"Create Directory Error {exception}");
+                                        throw;
+                                    }
+                                }
+                            };
+                            grid.Children.Add(textBox);
+                           window.Content = grid;
+                           window.Show();
+                }
+                else if (result == ContentDialogResult.Secondary)
+                {
+                            Window window = new Window();
+                            Grid grid1 = new Grid();
+                            TextBox nameBox2 = new TextBox();
+                            window.Height = 100;
+                            window.Width = 256;
+                            nameBox2.Height = 32;
+                            nameBox2.Width = 256;
+                            nameBox2.Text = EnLanguage.SimpleInputName;
+                            nameBox2.KeyUp += (obj, e) =>
+                            {
+                                if (e.Key == System.Windows.Input.Key.Enter)
+                                {
+                                    try
+                                    {
+                                        Directory.CreateDirectory(dir + "/" + nameBox2.Text);
+                                        using (var file = new OpenFileDialog())
+                                        {
+                                    
+                                            file.Title = EnLanguage.PictureSelect;
+                                            file.FileName = EnLanguage.ExamplePictureName;
+                                            file.Filter = "Image File(*.png, *.jpg, *.jpeg, *.gif)|*.png;*.jpg;*.jpeg;*.gif";
+                                            file.CheckFileExists = false;
+                                            file.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+                                            if (file.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                                            {
+                                                try
+                                                {
+                                                    var fi = new FileInfo(file.FileName);
+                                                    string path = file.SafeFileName;
+                                            
+                                                    Directory.CreateDirectory($"./Data/Image/{nameBox2.Text}");
+                                                    if (File.Exists($"./Data/Image/{nameBox2.Text}")) return;
+                                                    fi.CopyTo(($"./Data/Image/{nameBox2.Text}/{path}"));
+                                                    _logController.InfoLog($"File Move Success to ./Data/Image/{path}/{nameBox2.Text}");
+                                                    ((App)Application.Current).ResetMainPage();
+                                                    window.Close();
+                                                }
+                                                catch (Exception exception)
+                                                {
+                                                    _logController.ErrorLog($"File Move Error{exception}");
+                                                    throw;
+                                                } 
+                                            }
+                                        } 
+                                        _logController.InfoLog($"Create Directory Success {dir + "/" + nameBox2.Text}");
+                                        MessageBox.Show(EnLanguage.ImportPicture, EnLanguage.ImportPicture, MessageBoxButton.OK);
+                                    }
+                                    catch (Exception exception)
+                                    {
+                                        _logController.ErrorLog($"Create Directory Error {exception}");
+                                        throw;
+                                    }
+                                }
+                            };
+                    grid1.Children.Add(nameBox2);
+                    window.Content = grid1;
+                    window.Show();
+                }
+                else
+                {
+                    Console.WriteLine("Cancel");
+                }
+                break;
+            case "ja-JP":
+                    ContentDialog contentDialog1 = new ContentDialog
+                    {
+                        Title = JaLanguage.CreateImport,
+                        Content = JaLanguage.CreateImport,
+                        PrimaryButtonText = JaLanguage.CreateFolder,
+                        SecondaryButtonText = JaLanguage.ImportPicture,
+                        CloseButtonText = JaLanguage.cancel
+                    };
+                    ContentDialogResult  result1 = await contentDialog1.ShowAsync();
+                if (result1 == ContentDialogResult.Primary)
+                {
+                    Window window = new Window();
+                    Grid grid2 = new Grid();
+                    TextBox nameBox = new TextBox();
+                    window.Height = 100;
+                    window.Width = 256;
+                    nameBox.Height = 32;
+                    nameBox.Width = 256;
+                    nameBox.Text = JaLanguage.SimpleInputName;
+                    nameBox.KeyUp += (obj, e) =>
+                    {
+                        if (e.Key == System.Windows.Input.Key.Enter)
+                        {
+                            try
+                            {
+                                Directory.CreateDirectory(dir + "/" + nameBox.Text);
+                                _logController.InfoLog($"Create Directory Success {dir + "/" + nameBox.Text}");
+                                MessageBox.Show(JaLanguage.CreateDir, JaLanguage.CreateDir, MessageBoxButton.OK);
+                                ((App)Application.Current).ResetMainPage();
+                                window.Close();
+                            }
+                            catch (Exception exception)
+                            {
+                                _logController.ErrorLog($"Create Directory Error {exception}");
+                                throw;
+                            }
+                        }
+                    };
+                    grid2.Children.Add(nameBox);
+                    window.Content = grid2;
+                    window.Show();
+                }
+                else if (result1 == ContentDialogResult.Secondary)
+                {
+                    Window window = new Window();
+                    Grid grid3 = new Grid();
+                    window.Height = 100;
+                    window.Width = 256;
+                     TextBox nameBox3 = new TextBox
+                     {
+                         Height = 32,
+                         Width = 256,
+                         Text = JaLanguage.SimpleInputName
+                     };
+                     nameBox3.KeyUp += (obj, e) =>
+                            {
+                                if (e.Key == System.Windows.Input.Key.Enter)
+                                {
+                                    try
+                                    {
+                                        Directory.CreateDirectory(dir + "/" + nameBox3.Text);
+                                        using (var file = new OpenFileDialog())
+                                        {
+                                    
+                                            file.Title = JaLanguage.PictureSelect;
+                                            file.FileName = JaLanguage.ExamplePictureName;
+                                            file.Filter = "Image File(*.png, *.jpg, *.jpeg, *.gif)|*.png;*.jpg;*.jpeg;*.gif";
+                                            file.CheckFileExists = false;
+                                            file.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+                                            if (file.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                                            {
+                                                try
+                                                {
+                                                    var fi = new FileInfo(file.FileName);
+                                                    string path = file.SafeFileName;
+                                            
+                                                    Directory.CreateDirectory($"./Data/Image/{nameBox3.Text}");
+                                                    if (File.Exists($"./Data/Image/{nameBox3.Text}")) return;
+                                                    fi.CopyTo(($"./Data/Image/{nameBox3.Text}/{path}"));
+                                                    _logController.InfoLog($"File Move Success to ./Data/Image/{path}/{nameBox3.Text}");
+                                                    ((App)Application.Current).ResetMainPage();
+                                                    window.Close();
+                                                }
+                                                catch (Exception exception)
+                                                {
+                                                    _logController.ErrorLog($"File Move Error{exception}");
+                                                    throw;
+                                                } 
+                                            }
+                                        } 
+                                        _logController.InfoLog($"Create Directory Success {dir + "/" + nameBox3.Text}");
+                                        MessageBox.Show(JaLanguage.ImportPicture, JaLanguage.ImportPicture, MessageBoxButton.OK);
+                                    }
+                                    catch (Exception exception)
+                                    {
+                                        _logController.ErrorLog($"Create Directory Error {exception}");
+                                        throw;
+                                    }
+                                }
+                            };
+                            grid3.Children.Add(nameBox3);
+                            window.Content = grid3;
+                            window.Show();
+                }
+                else
+                {
+                    Console.WriteLine("Cancel");
+                }
+                break;
+        }
     }
 
     public void ReloadContent(bool cliCheck)
@@ -273,8 +511,53 @@ public partial class MainPage : Page
                     if (e.ChangedButton == System.Windows.Input.MouseButton.Right)
                     {
                         var contextMenu = new ContextMenu();
+                        var createImportItem = new MenuItem { Header = EnLanguage.CreateImport };
+                        var deleteItem = new MenuItem { Header = EnLanguage.SimpleDelete };
                         var openItem = new MenuItem { Header = EnLanguage.SimpleOpen };
                         var copyItem = new MenuItem { Header = EnLanguage.SimpleCopy };
+
+                        createImportItem.Click += async (obj, e) =>
+                        {
+                            try
+                            {
+                                        await ShowContentDialogAsync(Path.GetFullPath(path));
+                                        _logController.InfoLog($"File or Directory Import Success {Path.GetFullPath(path)}");
+                            }
+                            catch (Exception exception)
+                            {
+                                _logController.ErrorLog($"File or Directory Import Error{exception}");
+                                throw;
+                            }
+                        };
+                        
+                        deleteItem.Click += (obj, e) =>
+                        {
+                            try
+                            {
+                                if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+                                {
+                                    Directory.Delete(Path.GetFullPath(path), true);
+                                    _logController.InfoLog($"File or Directory Delete Success {Path.GetFullPath(path)}");
+                                    ((App)Application.Current).ResetMainPage();
+                                }
+                                else if (File.GetAttributes(path).HasFlag(FileAttributes.Normal))
+                                {
+                                    File.Delete(Path.GetFullPath(path));
+                                    _logController.InfoLog($"File or Directory Delete Success {Path.GetFullPath(path)}");
+                                    ((App)Application.Current).ResetMainPage();
+                                }
+                                else
+                                {
+                                 _logController.ErrorLog($"File or Directory Delete Error");   
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                _logController.ErrorLog($"File or Directory Delete Error{exception}");
+                                throw;
+                            }
+                        };
+                        
                         openItem.Click += (obj, e) =>
                         {
                             try
@@ -322,6 +605,8 @@ public partial class MainPage : Page
                                 throw;
                             }
                         };
+                        contextMenu.Items.Add(createImportItem);
+                        contextMenu.Items.Add(deleteItem);
                         contextMenu.Items.Add(openItem);
                         contextMenu.Items.Add(copyItem);
                         newItem.ContextMenu = contextMenu;
@@ -331,8 +616,44 @@ public partial class MainPage : Page
                     if (e.ChangedButton == System.Windows.Input.MouseButton.Right)
                     {
                         var contextMenu = new ContextMenu();
+                        var createImportItem = new MenuItem { Header = EnLanguage.CreateImport };
+                        var deleteItem = new MenuItem { Header = JaLanguage.SimpleDelete };
                         var openItem = new MenuItem { Header = JaLanguage.SimpleOpen };
                         var copyItem = new MenuItem { Header = JaLanguage.SimpleCopy };
+
+                        createImportItem.Click += async (obj, e) =>
+                        {
+                          await ShowContentDialogAsync(Path.GetFullPath(path));
+                        };
+                        
+                        deleteItem.Click += (obj, e) =>
+                        {
+                            try
+                            {
+                                if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+                                {
+                                    Directory.Delete(Path.GetFullPath(path), true);
+                                    _logController.InfoLog($"File or Directory Delete Success {Path.GetFullPath(path)}");
+                                    ((App)Application.Current).ResetMainPage();
+                                }
+                                else if (File.GetAttributes(path).HasFlag(FileAttributes.Normal))
+                                {
+                                    File.Delete(Path.GetFullPath(path));
+                                    _logController.InfoLog($"File or Directory Delete Success {Path.GetFullPath(path)}");
+                                    ((App)Application.Current).ResetMainPage();
+                                }
+                                else
+                                {
+                                 _logController.ErrorLog($"File or Directory Delete Error");   
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                _logController.ErrorLog($"File or Directory Delete Error{exception}");
+                                throw;
+                            }
+                        };
+
                         openItem.Click += (obj, e) =>
                         {
                             try
@@ -380,6 +701,8 @@ public partial class MainPage : Page
                                 throw;
                             }
                         };
+                        contextMenu.Items.Add(createImportItem);
+                        contextMenu.Items.Add(deleteItem);
                         contextMenu.Items.Add(openItem);
                         contextMenu.Items.Add(copyItem);
                         newItem.ContextMenu = contextMenu;
@@ -417,5 +740,10 @@ public partial class MainPage : Page
     {
         var parent = Window.GetWindow(this);
         parent?.Close();
+    }
+
+    private void FileView_OnMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        //スクロールバーの移動
     }
 }

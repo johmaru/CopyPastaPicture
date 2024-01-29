@@ -29,4 +29,12 @@ public struct EnLanguage
     public const string File = "File";
     public const string SimpleOpen = "Open";
     public const string SimpleCopy = "Copy";
+    public const string CreateImport = "Create/Import";
+    public const string CreateFolder = "Create Folder";
+    public const string ImportPicture = "Import Picture";
+    public const string ChoiceImportFolder = "Please choose whether to create a folder or import an image";
+    public const string SimpleInputName = "Input Name";
+    public const string CreateDir = "Create Directory Success";
+    public const string ImportPictureDir = "Import Picture Success";
+    public const string SimpleDelete = "Delete";
 }

@@ -34,11 +34,10 @@
         </Grid>
         
         <Grid Grid.Row="2" Grid.Column="0">
-            <ui:SimpleStackPanel>
-                <TreeView x:Name="FileView">
-                    
+                <ui:ScrollViewerEx x:Name="ScrollViewerEx" CanContentScroll="True">
+                <TreeView x:Name="FileView" MouseWheel="FileView_OnMouseWheel">
                 </TreeView>
-            </ui:SimpleStackPanel>
+                    </ui:ScrollViewerEx>
         </Grid>
         
         <Grid Grid.Row="2" Grid.Column="0">

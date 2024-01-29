@@ -88,6 +88,13 @@ namespace CopyPastaPicture
             };
             _notifyIcon.ContextMenuStrip = _menu;
         }
+        
+        public void ResetMainPage()
+        {
+            var parentWindow = Window.GetWindow(MainPageInstance);
+            Task.Delay(1000);
+            MainPageInstance.InitializeContent();
+        }
 
         protected override void OnExit(ExitEventArgs e)
         {

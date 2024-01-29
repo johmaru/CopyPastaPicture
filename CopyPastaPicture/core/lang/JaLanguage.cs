@@ -29,4 +29,12 @@ public struct JaLanguage
     public const string File = "ファイル";
     public const string SimpleOpen = "開く";
     public const string SimpleCopy = "コピー";
+    public const string CreateImport = "作成/インポート";
+    public const string CreateFolder = "フォルダーを作成";
+    public const string ImportPicture = "画像をインポート";
+    public const string ChoiceImportFolder = "フォルダを作成するか画像をインポートするか選んでください";
+    public const string SimpleInputName = "名前を入力";
+    public const string CreateDir = "ディレクトリを作成しました";
+    public const string ImportPictureDir = "画像をインポートしました";
+    public const string SimpleDelete = "削除";
 }
