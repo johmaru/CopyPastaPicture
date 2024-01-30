@@ -27,7 +27,8 @@ public class TomlControl
             TomlTable toml = new TomlTable
             {
                 ["Lang"] = "en-US",
-                ["CliMode"] = "true",
+                ["CliMode"] = "false",
+                ["Theme"] = "Dark",
                 ["WindowResolution"] =
                 {
                     ["Width"] = 800,

@@ -32,6 +32,9 @@ public partial class SettingPage : Page
                 EnglishComboBoxItem.Content = EnLanguage.LanguageEnglish;
                 JapaneseComboBoxItem.Content = EnLanguage.LanguageJapanese;
                 CliModeLabel.Content = EnLanguage.CliMode;
+                ThemeLabel.Content = EnLanguage.SimpleTheme;
+                DarkThemeComboBoxItem.Content = EnLanguage.Dark;
+                LightThemeComboBoxItem.Content = EnLanguage.Light;
                 break;
             case "ja-JP":
                 SaveButton.Content = JaLanguage.save;
@@ -41,29 +44,43 @@ public partial class SettingPage : Page
                 EnglishComboBoxItem.Content = JaLanguage.LanguageEnglish;
                 JapaneseComboBoxItem.Content = JaLanguage.LanguageJapanese;
                 CliModeLabel.Content = JaLanguage.CliMode;
+                ThemeLabel.Content = JaLanguage.SimpleTheme;
+                DarkThemeComboBoxItem.Content = JaLanguage.Dark;
+                LightThemeComboBoxItem.Content = JaLanguage.Light;
                 break;
         }
 
         _initLanguage = _tomlControl.LanguageName();
     }
 
-    public void SaveContent()
+    private void SaveContent()
     {
         //言語設定
-        switch (LanguageCombo.SelectedIndex)
+        if (LanguageCombo.SelectedItem.Equals(EnglishComboBoxItem))
         {
-            case 0:
-                TomlEditLanguage("en-US");
-                Console.WriteLine("en-US");
-                break;
-            case 1:
-                TomlEditLanguage("ja-JP");
-                Console.WriteLine("ja-JP");
-                break;
+            TomlEditLanguage("en-US");
+            Console.WriteLine("en-US");
         }
-        
+        else if (LanguageCombo.SelectedItem.Equals(JapaneseComboBoxItem))
+        {
+            TomlEditLanguage("ja-JP");
+            Console.WriteLine("ja-JP");
+        }
+          
+
+        if (ThemeCombo.SelectedItem.Equals(DarkThemeComboBoxItem))
+        {
+                    TomlEditTheme("Dark");
+                    Console.WriteLine("Dark");
+        }
+        else if (ThemeCombo.SelectedItem.Equals(LightThemeComboBoxItem))
+        { 
+            TomlEditTheme("Light");
+             Console.WriteLine("Light");
+        }
         //セーブ処理後の処理
         LanguageLoaded();
+        ((App)Application.Current).ThemeChange();
         ((App)Application.Current).LoadNotifyIcon();
         var mainPage = ((App)Application.Current).MainPageInstance;
         mainPage.InitializeLanguage();
@@ -119,7 +136,29 @@ public partial class SettingPage : Page
             throw;
         }
     }
-
+    
+    private void TomlEditTheme(string data)
+    {
+        try
+        {
+            using (StreamReader reader = new StreamReader(File.OpenRead("./Data/Setting.toml")))
+            {
+                var toml = TOML.Parse(reader);
+                toml["Theme"] =data;
+                using (StreamWriter writer = new StreamWriter(File.OpenWrite("./Data/Setting.toml")))
+                {
+                    toml.WriteTo(writer);
+                    writer.Flush();
+                }
+            }
+            _logController.InfoLog("TomlEditLanguage Success");
+        }
+        catch (Exception e)
+        {
+            _logController.ErrorLog($"TomlEditLanguage Error{e}");
+            throw;
+        }
+    }
     private void LanguageCombo_OnLoaded(object sender, RoutedEventArgs e)
     {
         switch (_tomlControl.LanguageName())
@@ -253,6 +292,19 @@ public partial class SettingPage : Page
         else if (_tomlControl.GetTomlData("CliMode").Equals("false"))
         {
             CliModeToggleSwitch.IsOn = false;
+        }
+    }
+
+    private void ThemeCombo_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        switch (_tomlControl.GetTomlData("Theme"))
+        {
+            case "Dark":
+                ThemeCombo.SelectedItem = DarkThemeComboBoxItem;
+                break;
+            case "Light":
+                ThemeCombo.SelectedItem = LightThemeComboBoxItem;
+                break;
         }
     }
 }

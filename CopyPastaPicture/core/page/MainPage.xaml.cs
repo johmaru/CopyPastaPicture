@@ -5,10 +5,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CopyPastaPicture.core.lang;
 using CopyPastaPicture.core.lib;
 using CopyPastaPicture.core.window;
+using ModernWpf;
 using ModernWpf.Controls;
 using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
@@ -35,6 +37,15 @@ public partial class MainPage : Page
 
     private void Initialize()
     {
+        switch (ThemeManager.Current.ApplicationTheme)
+        {
+            case ApplicationTheme.Dark :
+                TGrid.Background = System.Windows.Media.Brushes.Gray;
+                break;
+            case ApplicationTheme.Light : 
+                TGrid.Background = System.Windows.Media.Brushes.LightGray;
+                break;
+        }
         _logController.InfoLog("Initialize MainPage");
     }
     
@@ -46,6 +57,7 @@ public partial class MainPage : Page
                 CliButton.Header = EnLanguage.OpenCliButton;
                 SettingButton.Header = EnLanguage.OpenSettingButton;
                 ExitButton.Header = EnLanguage.Exit;
+                GuiHelpButton.Header = EnLanguage.Help;
                 HelpButton.Header = EnLanguage.Help;
                 FileItem.Header = EnLanguage.File;
                 break;
@@ -53,6 +65,7 @@ public partial class MainPage : Page
                 CliButton.Header = JaLanguage.OpenCliButton;
                 SettingButton.Header = JaLanguage.OpenSettingButton;
                 ExitButton.Header = JaLanguage.Exit;
+                GuiHelpButton.Header = JaLanguage.Help;
                 HelpButton.Header = JaLanguage.Help;
                 FileItem.Header = JaLanguage.File;
                 break;
@@ -63,6 +76,20 @@ public partial class MainPage : Page
     public void InitializeContent()
     {
         FileSearch();
+        ThemeInitialize();
+    }
+    
+    private void ThemeInitialize()
+    {
+        switch (ThemeManager.Current.ApplicationTheme)
+        {
+            case ApplicationTheme.Dark :
+                FileItem.Background = System.Windows.Media.Brushes.Gray;
+                break;
+            case ApplicationTheme.Light : 
+                FileItem.Background = System.Windows.Media.Brushes.LightGray;
+                break;
+        }
     }
 
     private async Task ShowContentDialogAsync(string dir)
@@ -294,7 +321,9 @@ public partial class MainPage : Page
 
     public void ReloadContent(bool cliCheck)
     {
-        CliButton.Visibility = cliCheck is true ? Visibility.Visible : Visibility.Hidden;
+        CliButton.Visibility = cliCheck is true ? Visibility.Visible : Visibility.Collapsed;
+        HelpButton.Visibility = cliCheck is true ? Visibility.Visible : Visibility.Collapsed;
+        GuiHelpButton.Visibility = cliCheck is true ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private void CliButton_OnClick(object sender, RoutedEventArgs e)
@@ -745,5 +774,10 @@ public partial class MainPage : Page
     private void FileView_OnMouseWheel(object sender, MouseWheelEventArgs e)
     {
         //スクロールバーの移動
+    }
+
+    private void GuiHelpButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        MessageBox.Show("Not Implemented", "Not Implemented", MessageBoxButton.OK);
     }
 }

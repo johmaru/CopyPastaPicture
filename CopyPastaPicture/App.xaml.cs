@@ -16,6 +16,8 @@ using CopyPastaPicture.core.lang;
 using CopyPastaPicture.core.lib;
 using CopyPastaPicture.core.page;
 using CopyPastaPicture.core.window;
+using Microsoft.Windows.Themes;
+using ModernWpf;
 using Application = System.Windows.Application;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using KeyEventHandler = System.Windows.Input.KeyEventHandler;
@@ -44,12 +46,15 @@ namespace CopyPastaPicture
             // ./core/lib/TomlControl.cs のInitialize
             _tomlControl.Initialize();
             
+            ThemeChange();
+            
             LoadNotifyIcon();
             
             EventManager.RegisterClassHandler(typeof(Window), Window.KeyDownEvent, new KeyEventHandler(OnKeyDown), true);
             
             base.OnStartup(e);
             MainPageInstance = new MainPage();
+            MainPageInstance.ReloadContent(IsCliWindowEnable());
             MainWindowInstance = new MainWindow();
         }
         
@@ -88,12 +93,32 @@ namespace CopyPastaPicture
             };
             _notifyIcon.ContextMenuStrip = _menu;
         }
+
+        public void ThemeChange()
+        {
+            switch (_tomlControl.GetTomlData("Theme"))
+            {
+                case "Dark":
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                    break;
+                case "Light":
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                    break;
+            }
+        }
         
         public void ResetMainPage()
         {
             var parentWindow = Window.GetWindow(MainPageInstance);
             Task.Delay(1000);
             MainPageInstance.InitializeContent();
+        }
+
+        private bool IsCliWindowEnable()
+        {
+         string result =  _tomlControl.GetTomlData("CliMode");
+
+         return bool.Parse(result);
         }
 
         protected override void OnExit(ExitEventArgs e)

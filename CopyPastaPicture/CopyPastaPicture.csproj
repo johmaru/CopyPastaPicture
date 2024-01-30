@@ -30,6 +30,10 @@
       <Resource Include="resources\ico\picture_photo_image_icon_131252.ico">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
+      <None Remove="resources\ico\menu.ico" />
+      <Resource Include="resources\ico\menu.ico">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
     </ItemGroup>
 
 </Project>

@@ -37,4 +37,7 @@ public struct EnLanguage
     public const string CreateDir = "Create Directory Success";
     public const string ImportPictureDir = "Import Picture Success";
     public const string SimpleDelete = "Delete";
+    public const string SimpleTheme = "Theme";
+    public const string Dark = "Dark";
+    public const string Light = "Light";
 }

@@ -37,4 +37,7 @@ public struct JaLanguage
     public const string CreateDir = "ディレクトリを作成しました";
     public const string ImportPictureDir = "画像をインポートしました";
     public const string SimpleDelete = "削除";
+    public const string SimpleTheme = "テーマ";
+    public const string Dark = "ダーク";
+    public const string Light = "ライト";
 }

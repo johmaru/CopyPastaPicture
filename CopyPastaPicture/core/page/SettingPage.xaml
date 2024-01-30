@@ -33,6 +33,11 @@
                     </ComboBox>
                     <Label x:Name="CliModeLabel" Content="" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center"/>
                     <ui:ToggleSwitch x:Name="CliModeToggleSwitch" HorizontalAlignment="Center" Toggled="CliModeToggleSwitch_OnToggled" Loaded="CliModeToggleSwitch_OnLoaded"/>
+                    <Label x:Name="ThemeLabel" HorizontalAlignment="Center" Content="" FontWeight="Bold" FontSize="15"/>
+                    <ComboBox x:Name="ThemeCombo" HorizontalAlignment="Center" Loaded="ThemeCombo_OnLoaded">
+                        <ComboBoxItem x:Name="LightThemeComboBoxItem" Tag="Light"/>
+                        <ComboBoxItem x:Name="DarkThemeComboBoxItem" Tag="Dark"/>
+                    </ComboBox>
                 </ui:SimpleStackPanel>
             </ui:ScrollViewerEx>
         </Grid>
