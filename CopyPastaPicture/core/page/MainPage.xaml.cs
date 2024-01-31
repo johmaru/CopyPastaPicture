@@ -32,20 +32,12 @@ public partial class MainPage : Page
         _logController.Initialize();
         Initialize();
         InitializeLanguage();
-        FileSearch();
+        Task.Run(InitializeContent);
+        Task.Run(LoadedButton);
     }
 
     private void Initialize()
     {
-        switch (ThemeManager.Current.ApplicationTheme)
-        {
-            case ApplicationTheme.Dark :
-                TGrid.Background = System.Windows.Media.Brushes.Gray;
-                break;
-            case ApplicationTheme.Light : 
-                TGrid.Background = System.Windows.Media.Brushes.LightGray;
-                break;
-        }
         _logController.InfoLog("Initialize MainPage");
     }
     
@@ -70,25 +62,29 @@ public partial class MainPage : Page
                 FileItem.Header = JaLanguage.File;
                 break;
         }
-        InitializeContent();
     }
 
-    public void InitializeContent()
+    public async Task InitializeContent()
     {
-        FileSearch();
-        ThemeInitialize();
+      await  FileSearch();
+     await  ThemeInitialize();
     }
     
-    private void ThemeInitialize()
+    private async Task ThemeInitialize()
     {
-        switch (ThemeManager.Current.ApplicationTheme)
+        if (_tomlControl.GetTomlData("Theme") == "Dark")
         {
-            case ApplicationTheme.Dark :
-                FileItem.Background = System.Windows.Media.Brushes.Gray;
-                break;
-            case ApplicationTheme.Light : 
-                FileItem.Background = System.Windows.Media.Brushes.LightGray;
-                break;
+            await Dispatcher.InvokeAsync(() => ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark);
+            await Dispatcher.InvokeAsync(() => TGrid.Background = Brushes.DimGray);
+        }
+        else if (_tomlControl.GetTomlData("Theme") == "Light")
+        {
+            await Dispatcher.InvokeAsync(() => ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light);
+            await Dispatcher.InvokeAsync(() => TGrid.Background = Brushes.LightGray);
+        }
+        else
+        {
+          _logController.ErrorLog("ThemeInitialize Error");
         }
     }
 
@@ -319,11 +315,25 @@ public partial class MainPage : Page
         }
     }
 
-    public void ReloadContent(bool cliCheck)
+    public Task ReloadContent(bool cliCheck)
     {
         CliButton.Visibility = cliCheck is true ? Visibility.Visible : Visibility.Collapsed;
         HelpButton.Visibility = cliCheck is true ? Visibility.Visible : Visibility.Collapsed;
         GuiHelpButton.Visibility = cliCheck is true ? Visibility.Collapsed : Visibility.Visible;
+        return Task.CompletedTask;
+    }
+
+    private async void LoadedButton()
+    {
+        var cliCheck = _tomlControl.GetTomlData("CliMode");
+       bool cliCheck2 = bool.Parse(cliCheck);
+
+       await Dispatcher.InvokeAsync(() =>
+           CliButton.Visibility = cliCheck2 is true ? Visibility.Visible : Visibility.Collapsed);
+        await Dispatcher.InvokeAsync(() => 
+            HelpButton.Visibility = cliCheck2 is true ? Visibility.Visible : Visibility.Collapsed);
+           await Dispatcher.InvokeAsync(() =>
+               GuiHelpButton.Visibility = cliCheck2 is true ? Visibility.Collapsed : Visibility.Visible);
     }
 
     private void CliButton_OnClick(object sender, RoutedEventArgs e)
@@ -333,22 +343,37 @@ public partial class MainPage : Page
         cliWindow.Show();
     }
 
-    private void FileSearch()
+    private async Task FileSearch()
     {
         try
         {
             if (!Directory.Exists("./Data"))
             {
                 Directory.CreateDirectory("./Data");
+                _logController.InfoLog("Create Data Directory Success");
+            }
+            else if (!Directory.Exists("./Data/Image"))
+            {
+                Directory.CreateDirectory("./Data/Image");
+                _logController.InfoLog("Create Image Directory Success");
+            }
+            else if (!Directory.Exists("./Data/Msg"))
+            {
+                Directory.CreateDirectory("./Data/Msg");
+                _logController.InfoLog("Create Msg Directory Success");
+            }
+            else
+            {
+                _logController.InfoLog("Data Directory Already Exists");
             }
             
-            FileView.Items.Clear();
+            await Dispatcher.InvokeAsync(() => FileView.Items.Clear());
 
-            var dataDirectories = Directory.GetDirectories("Data");
+            var dataDirectories = await Task.Run(() => Directory.GetDirectories("./Data"));
             foreach (var directory in dataDirectories)
             {
                 var newItem = CreateTreeViewItem(directory);
-                FileView.Items.Add(newItem);
+                await Dispatcher.InvokeAsync(() => FileView.Items.Add(newItem));
             }
         }
         catch (Exception e)
@@ -747,8 +772,10 @@ public partial class MainPage : Page
 
     private void SettingButton_OnClick(object sender, RoutedEventArgs e)
     {
-       SettingWindow settingWindow = new();
-            settingWindow.Owner = Window.GetWindow(this);
+            SettingWindow settingWindow = new()
+            {
+                Owner = Window.GetWindow(this)
+            };
             settingWindow.Show();
     }
 

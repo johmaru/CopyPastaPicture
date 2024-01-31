@@ -20,7 +20,7 @@ public partial class SettingPage : Page
         LanguageLoaded();
     }
 
-    private void LanguageLoaded()
+    private async void LanguageLoaded()
     {
         switch (_tomlControl.LanguageName())
         {
@@ -53,7 +53,7 @@ public partial class SettingPage : Page
         _initLanguage = _tomlControl.LanguageName();
     }
 
-    private void SaveContent()
+    private async void SaveContent()
     {
         //言語設定
         if (LanguageCombo.SelectedItem.Equals(EnglishComboBoxItem))
@@ -81,23 +81,22 @@ public partial class SettingPage : Page
         //セーブ処理後の処理
         LanguageLoaded();
         ((App)Application.Current).ThemeChange();
-        ((App)Application.Current).LoadNotifyIcon();
+       await ((App)Application.Current).LoadNotifyIcon();
         var mainPage = ((App)Application.Current).MainPageInstance;
         mainPage.InitializeLanguage();
         if (CliModeToggleSwitch.IsOn)
         {
-            mainPage.ReloadContent(true);
+           await mainPage.ReloadContent(true);
         }
         else
         {
-            mainPage.ReloadContent(false);
+          await  mainPage.ReloadContent(false);
         }
         _logController.InfoLog("JapaneseComboBoxItem Success");
     }
 
     private int CheckSavedItem()
     {
-        int result;
         string language = "";
         // 言語変更確認
         switch (LanguageCombo.SelectedIndex)
@@ -110,7 +109,7 @@ public partial class SettingPage : Page
                 break;
         }
 
-        result = _initLanguage == language ? 0 : 1;
+        var result = _initLanguage == language ? 0 : 1;
         return result;
     }
     

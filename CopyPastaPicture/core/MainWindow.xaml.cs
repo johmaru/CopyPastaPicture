@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Navigation;
 using CopyPastaPicture.core.lib;
 using CopyPastaPicture.core.page;
 using Tommy;
@@ -40,6 +42,8 @@ namespace CopyPastaPicture.core
         private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
         {
             _logController.InfoLog("Close MainWindow");
+            e.Cancel = true;
+            this.Hide();
         }
 
         private void SetWindowResolution()

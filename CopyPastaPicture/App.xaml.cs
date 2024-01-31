@@ -39,33 +39,34 @@ namespace CopyPastaPicture
         private const int Opkey = 0x0001;
         private const int Clikey = 0x0002;
         
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
             // ./core/lib/LogController.cs のInitialize
             _logController.Initialize();
             // ./core/lib/TomlControl.cs のInitialize
             _tomlControl.Initialize();
             
-            ThemeChange();
+            MainPageInstance = new MainPage();
+            await MainPageInstance.InitializeContent();
+
+            await LoadNotifyIcon();
             
-            LoadNotifyIcon();
+            MainWindowInstance = new MainWindow();
             
             EventManager.RegisterClassHandler(typeof(Window), Window.KeyDownEvent, new KeyEventHandler(OnKeyDown), true);
-            
-            base.OnStartup(e);
-            MainPageInstance = new MainPage();
-            MainPageInstance.ReloadContent(IsCliWindowEnable());
-            MainWindowInstance = new MainWindow();
+
+           ThemeChange();
         }
         
-        public void LoadNotifyIcon()
+        public async Task LoadNotifyIcon()
         {
             _menu.Items.Clear();
             switch (_tomlControl.LanguageName())
             {
                 case "en-US":
                     //タクストレイのコード
-                    _menu.Items.Add(EnLanguage.Open, null, (obj, e) => { new MainWindow().Show(); });
+                    _menu.Items.Add(EnLanguage.Open, null, (obj, e) => { MainWindowInstance.Show(); });
                     _menu.Items.Add(EnLanguage.OpenCliButton, null, (obj, e) => { new CliWindow().Show(); });
                     _menu.Items.Add(EnLanguage.Setting, null, (obj, e) => { new SettingWindow().Show(); });
                     _menu.Items.Add(EnLanguage.Exit, null, (obj, e) => { Application.Current.Shutdown(); });
@@ -73,7 +74,7 @@ namespace CopyPastaPicture
                 case "ja-JP":
                     
                     //タクストレイのコード
-                    _menu.Items.Add(JaLanguage.Open, null, (obj, e) => { new MainWindow().Show(); });
+                    _menu.Items.Add(JaLanguage.Open, null, (obj, e) => { MainWindowInstance.Show(); });
                     _menu.Items.Add(JaLanguage.OpenCliButton, null, (obj, e) => { new CliWindow().Show(); });
                     _menu.Items.Add(JaLanguage.Setting, null, (obj, e) => { new SettingWindow().Show(); });
                     _menu.Items.Add(JaLanguage.Exit, null, (obj, e) => { Application.Current.Shutdown(); });
@@ -88,7 +89,9 @@ namespace CopyPastaPicture
                 if (e.Button == MouseButtons.Left)
                 {
                     if (Current.Windows.OfType<MainWindow>().Any(x => x.IsActive))return;
-                    MainWindowInstance.Show();
+                    
+                            MainWindowInstance.Show();
+                            MainWindowInstance.Activate();
                 }
             };
             _notifyIcon.ContextMenuStrip = _menu;
@@ -107,11 +110,9 @@ namespace CopyPastaPicture
             }
         }
         
-        public void ResetMainPage()
+        public async void ResetMainPage()
         {
-            var parentWindow = Window.GetWindow(MainPageInstance);
-            Task.Delay(1000);
-            MainPageInstance.InitializeContent();
+           await MainPageInstance.InitializeContent();
         }
 
         private bool IsCliWindowEnable()
