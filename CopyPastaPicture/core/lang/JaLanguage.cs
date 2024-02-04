@@ -40,4 +40,8 @@ public struct JaLanguage
     public const string SimpleTheme = "テーマ";
     public const string Dark = "ダーク";
     public const string Light = "ライト";
+    public const string CreateMessage = "メッセージを作成";
+    public const string CreateMessageDir = "メッセージを作成しました";
+    public const string CreateImage = "画像を作成";
+    public const string CreateImportImage = "画像を作成/インポート";
 }

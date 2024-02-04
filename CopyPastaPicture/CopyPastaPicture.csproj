@@ -27,11 +27,16 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
       <None Remove="resources\ico\picture_photo_image_icon_131252.ico" />
-      <Resource Include="resources\ico\picture_photo_image_icon_131252.ico">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Resource>
       <None Remove="resources\ico\menu.ico" />
       <Resource Include="resources\ico\menu.ico">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="resources\ico\fileinterfacesymboloftextpapersheet_79740.ico" />
+      <Resource Include="resources\ico\TextIcon.ico">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="resources\ico\construction_project_plan_building_architect_design_develop-61_icon-icons.com_60253.ico" />
+      <Resource Include="resources\ico\TextIcon2.ico">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Resource>
     </ItemGroup>

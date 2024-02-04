@@ -1,19 +1,22 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CopyPastaPicture.core.lang;
 using CopyPastaPicture.core.lib;
 using CopyPastaPicture.core.window;
+using CopyPastaPicture.core.window.subwindow;
 using ModernWpf;
 using ModernWpf.Controls;
 using Application = System.Windows.Application;
+using Brushes = System.Windows.Media.Brushes;
 using Clipboard = System.Windows.Clipboard;
+using Image = System.Windows.Controls.Image;
 using MessageBox = System.Windows.MessageBox;
 using Orientation = System.Windows.Controls.Orientation;
 using Page = System.Windows.Controls.Page;
@@ -372,8 +375,11 @@ public partial class MainPage : Page
             var dataDirectories = await Task.Run(() => Directory.GetDirectories("./Data"));
             foreach (var directory in dataDirectories)
             {
-                var newItem = CreateTreeViewItem(directory);
-                await Dispatcher.InvokeAsync(() => FileView.Items.Add(newItem));
+               
+                    var newItem = CreateTreeViewItem(directory);
+                    await Dispatcher.InvokeAsync(() => FileView.Items.Add(newItem));
+                
+                  
             }
         }
         catch (Exception e)
@@ -397,6 +403,7 @@ public partial class MainPage : Page
         stackPanel1.Children.Add(folderImage);
         stackPanel1.Children.Add(textBlock);
         var newItem = new TreeViewItem { Header = Path.GetFileName(path) };
+        
         newItem.Loaded += (obj, e) =>
         {
             if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
@@ -406,6 +413,7 @@ public partial class MainPage : Page
             var directories = Directory.GetDirectories(path);
             foreach (var directory in directories)
             {
+                Console.WriteLine(directory);
                 var subItem = CreateTreeViewItem(directory);
                 newItem.Items.Add(subItem);
             }
@@ -414,25 +422,34 @@ public partial class MainPage : Page
             {
                 //ピクチャ画像
                 var stackPanel2 = new StackPanel() { Orientation = Orientation.Horizontal };
-                var pictureImage = new Image
+                var extension = Path.GetExtension(file);
+                Image image = new Image { Width = 16, Height = 16 };
+                if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".gif")
                 {
-                    Source = new BitmapImage(new Uri("/resources/ico/picture_photo_image_icon_131252.ico", UriKind.Relative)),
-                    Width = 16,
-                    Height = 16
-                };
+                    image.Source = new BitmapImage(new Uri("/resources/ico/Picture.ico", UriKind.Relative));
+                }
+                else if (extension == ".txt")
+                {
+                    image.Source = new BitmapImage(new Uri("/resources/ico/TextIcon2.ico", UriKind.Relative));
+                }
+                stackPanel2.Children.Add(image);
                 var textBlock2 = new TextBlock { Text = Path.GetFileName(file), Margin = new Thickness(10, 0, 0, 0) };
-                stackPanel2.Children.Add(pictureImage);
                 stackPanel2.Children.Add(textBlock2);
-                var fileItem = new TreeViewItem { Header = Path.GetFileName(file) };
+                var fileItem = new TreeViewItem { Header =stackPanel2, Tag = file};
+                
                 fileItem.Loaded += (obj, e) =>
                 {
-                    var pathExtension = Path.GetExtension(Path.GetFullPath(file));
-                    Console.WriteLine(pathExtension);
+                    var pathExtension = Path.GetExtension(Path.GetFullPath(Path.GetFullPath(fileItem.Tag as string)));
                     if (pathExtension == ".png" || pathExtension == ".jpg" || pathExtension == ".jpeg" || pathExtension == ".gif")
                     {
+                        Image newImage = new Image { Width = 16, Height = 16 };
+                        newImage.Source = new BitmapImage(new Uri("/resources/ico/Picture.ico", UriKind.Relative));
+                        stackPanel2.Children.Add(newImage);
                         fileItem.Header = stackPanel2;
+                       
                     }
                 };
+                
                 fileItem.MouseRightButtonUp += (obj, e) =>
             {
                 switch (_tomlControl.LanguageName())
@@ -447,12 +464,24 @@ public partial class MainPage : Page
                             {
                                 try
                                 {
-                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                                    var imageContains = path.Contains("Image");
+                                    var messageContains = path.Contains("Msg");
+                                    if (imageContains)
                                     {
-                                        FileName = Path.GetFullPath(file),
-                                        UseShellExecute = true
-                                    });
-                                    _logController.InfoLog($"File Open Success {Path.GetFullPath(file)}");
+                                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                                        {
+                                            FileName = fileItem.Tag as string,
+                                            UseShellExecute = true
+                                        });
+                                        _logController.InfoLog($"File Open Success {Path.GetFullPath(path)}");
+                                    }
+                                    else if (messageContains)
+                                    {
+                                        string text = File.ReadAllText(Path.GetFullPath(fileItem.Tag as string));
+                                        TextEditWindow textEditWindow = new TextEditWindow(Path.GetFullPath(fileItem.Tag as string),text);
+                                        textEditWindow.Owner = Window.GetWindow(this);
+                                        textEditWindow.Show();
+                                    }
                                 }
                                 catch (Exception exception)
                                 {
@@ -464,25 +493,21 @@ public partial class MainPage : Page
                             {
                                 try
                                 {
-                                    if (File.GetAttributes(file).HasFlag(FileAttributes.Directory))
                                     {
-                                        Clipboard.SetText(Path.GetFullPath(file));
-                                    }
-                                    else
-                                    {
-                                        var pathExtension = Path.GetExtension(Path.GetFullPath(file));
+                                        var pathExtension = Path.GetExtension(fileItem.Tag as string);
                                         Console.WriteLine(pathExtension);
                                         if (pathExtension == ".png" || pathExtension == ".jpg" || pathExtension == ".jpeg" || pathExtension == ".gif")
                                         {
-                                            var bitmap = new BitmapImage(new Uri("file://" + Path.GetFullPath(file)));
+                                            var bitmap = new BitmapImage(new Uri("file://" + Path.GetFullPath(fileItem.Tag as string)));
                                             Clipboard.SetImage(bitmap);
                                         }
                                         else if (pathExtension == ".txt")
                                         {
-                                            //Clipboard.SetText(File.ReadAllText(Path.GetFullPath(path)));
+                                           var content = File.ReadAllText(fileItem.Tag as string);
+                                           Clipboard.SetText(content);
                                         }
                                     }
-                                    _logController.InfoLog($"File Copy Success {Path.GetFullPath(file)}");
+                                    _logController.InfoLog($"File Copy Success {Path.GetFullPath(path)}");
                                 }
                                 catch (Exception exception)
                                 {
@@ -505,11 +530,24 @@ public partial class MainPage : Page
                             {
                                 try
                                 {
+                                    var imageContains = path.Contains("Image");
+                                    var messageContains = path.Contains("Msg");
+                                    if (imageContains)
+                                    {
                                         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                                         {
-                                            FileName = Path.GetFullPath(file),
+                                            FileName = fileItem.Tag as string,
                                             UseShellExecute = true
                                         });
+                                        _logController.InfoLog($"File Open Success {Path.GetFullPath(path)}");
+                                    }
+                                    else if (messageContains)
+                                    {
+                                        string text = File.ReadAllText(Path.GetFullPath(fileItem.Tag as string));
+                                        TextEditWindow textEditWindow = new TextEditWindow(Path.GetFullPath(fileItem.Tag as string),text);
+                                        textEditWindow.Owner = Window.GetWindow(this);
+                                        textEditWindow.Show();
+                                    }
                                 }
                                 catch (Exception exception)
                                 {
@@ -521,25 +559,21 @@ public partial class MainPage : Page
                             {
                                 try
                                 {
-                                    if (File.GetAttributes(file).HasFlag(FileAttributes.Directory))
                                     {
-                                        Clipboard.SetText(Path.GetFullPath(file));
-                                    }
-                                    else
-                                    {
-                                        var pathExtension = Path.GetExtension(Path.GetFullPath(file));
+                                        var pathExtension = Path.GetExtension(fileItem.Tag as string);
                                         Console.WriteLine(pathExtension);
                                         if (pathExtension == ".png" || pathExtension == ".jpg" || pathExtension == ".jpeg" || pathExtension == ".gif")
                                         {
-                                            var bitmap = new BitmapImage(new Uri(Path.GetFullPath(file)));
+                                            var bitmap = new BitmapImage(new Uri("file://" + Path.GetFullPath(fileItem.Tag as string)));
                                             Clipboard.SetImage(bitmap);
                                         }
                                         else if (pathExtension == ".txt")
                                         {
-                                            //Clipboard.SetText(File.ReadAllText(Path.GetFullPath(path)));
+                                           var content = File.ReadAllText(fileItem.Tag as string);
+                                           Clipboard.SetText(content);
                                         }
                                     }
-                                    _logController.InfoLog($"File Copy Success {Path.GetFullPath(file)}");
+                                    _logController.InfoLog($"File Copy Success {Path.GetFullPath(path)}");
                                 }
                                 catch (Exception exception)
                                 {
@@ -547,6 +581,7 @@ public partial class MainPage : Page
                                     throw;
                                 }
                             };
+                            
                             contextMenu.Items.Add(openItem);
                             contextMenu.Items.Add(copyItem);
                             fileItem.ContextMenu = contextMenu;
@@ -565,7 +600,8 @@ public partial class MainPage : Page
                     if (e.ChangedButton == System.Windows.Input.MouseButton.Right)
                     {
                         var contextMenu = new ContextMenu();
-                        var createImportItem = new MenuItem { Header = EnLanguage.CreateImport };
+                        var createImportItem = new MenuItem { Header = EnLanguage.CreateImportImage };
+                        var createMsgItem = new MenuItem { Header = EnLanguage.CreateMessage };
                         var deleteItem = new MenuItem { Header = EnLanguage.SimpleDelete };
                         var openItem = new MenuItem { Header = EnLanguage.SimpleOpen };
                         var copyItem = new MenuItem { Header = EnLanguage.SimpleCopy };
@@ -584,6 +620,62 @@ public partial class MainPage : Page
                             }
                         };
                         
+                        createMsgItem.Click += (obj, e) =>
+                        {
+                            try
+                            {
+                                if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+                                {
+                                    Window window = new Window();
+                                    window.Height = 100;
+                                    window.Width = 256;
+                                    Grid grid = new Grid();
+                                    TextBox textBox = new TextBox();
+                                    textBox.Height = 32;
+                                    textBox.Width = 256;
+                                    textBox.Text = EnLanguage.SimpleInputName;
+                                    textBox.KeyUp += (obj, e) =>
+                                    {
+                                        if (e.Key == System.Windows.Input.Key.Enter)
+                                        {
+                                            try
+                                            {
+                                                if (!Directory.Exists(Path.GetFullPath(path) + "/Msg/" + textBox.Text))
+                                                {
+                                                    File.WriteAllText(Path.GetFullPath(path) + $"/{textBox.Text}.txt", "");
+                                                    MessageBox.Show(EnLanguage.CreateMessageDir, EnLanguage.CreateMessageDir, MessageBoxButton.OK);
+                                                    
+                                                    ((App)Application.Current).ResetMainPage();
+                                                    window.Close();
+                                                }
+                                                else
+                                                {
+                                                    var result = MessageBox.Show("Exists Same Name Directory", "Exists Same Name Directory", MessageBoxButton.OK);
+                                                   if(result == MessageBoxResult.OK)
+                                                   {
+                                                       window.Close();
+                                                   }
+                                                }
+                                            }
+                                            catch (Exception exception)
+                                            {
+                                                _logController.ErrorLog($"Create Message Error{exception}");
+                                                throw;
+                                            }
+                                        }
+                                    };
+                                    grid.Children.Add(textBox);
+                                    window.Content = grid;
+                                    window.Show();
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                _logController.ErrorLog($"Create Message Error{exception}");
+                                throw;
+                            }
+                        };
+                        
                         deleteItem.Click += (obj, e) =>
                         {
                             try
@@ -616,12 +708,23 @@ public partial class MainPage : Page
                         {
                             try
                             {
-                                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                                var extension = Path.GetExtension(Path.GetFullPath(path));
+                                if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".gif")
                                 {
-                                    FileName = Path.GetFullPath(path),
-                                    UseShellExecute = true
-                                });
-                                _logController.InfoLog($"File Open Success {Path.GetFullPath(path)}");
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        FileName = Path.GetFullPath(path),
+                                        UseShellExecute = true
+                                    });
+                                    _logController.InfoLog($"File Open Success {Path.GetFullPath(path)}");
+                                }
+                                else if (extension == ".txt")
+                                {
+                                    string text = File.ReadAllText(Path.GetFullPath(path));
+                                    TextEditWindow textEditWindow = new TextEditWindow(path,text);
+                                    textEditWindow.Owner = Window.GetWindow(this);
+                                    textEditWindow.Show();
+                                }
                             }
                             catch (Exception exception)
                             {
@@ -648,7 +751,8 @@ public partial class MainPage : Page
                                     }
                                     else if (pathExtension == ".txt")
                                     {
-                                        //Clipboard.SetText(File.ReadAllText(Path.GetFullPath(path)));
+                                        string content = File.ReadAllText(Path.GetFullPath(path));
+                                        Clipboard.SetText(File.ReadAllText(Path.GetFullPath(content)));
                                     }
                                 }
                                 _logController.InfoLog($"File Copy Success {Path.GetFullPath(path)}");
@@ -659,18 +763,38 @@ public partial class MainPage : Page
                                 throw;
                             }
                         };
-                        contextMenu.Items.Add(createImportItem);
-                        contextMenu.Items.Add(deleteItem);
-                        contextMenu.Items.Add(openItem);
-                        contextMenu.Items.Add(copyItem);
-                        newItem.ContextMenu = contextMenu;
+
+                        var nowPathImage = path.Contains("Image");
+                        var nowPathMsg = path.Contains("Msg");
+                        if (nowPathImage)
+                        {
+                            contextMenu.Items.Add(createImportItem);
+                            contextMenu.Items.Add(deleteItem);
+                            contextMenu.Items.Add(openItem);
+                            contextMenu.Items.Add(copyItem);
+                            newItem.ContextMenu = contextMenu;
+                        }
+                        else if (nowPathMsg)
+                        {
+                            contextMenu.Items.Add(createMsgItem);
+                            contextMenu.Items.Add(deleteItem);
+                            contextMenu.Items.Add(openItem);
+                            contextMenu.Items.Add(copyItem);
+                            newItem.ContextMenu = contextMenu;
+                        }
+                        else
+                        {
+                            contextMenu.Items.Add(deleteItem);
+                            newItem.ContextMenu = contextMenu;
+                        }
                     }
                     break;
                 case "ja-JP":
                     if (e.ChangedButton == System.Windows.Input.MouseButton.Right)
                     {
                         var contextMenu = new ContextMenu();
-                        var createImportItem = new MenuItem { Header = EnLanguage.CreateImport };
+                        var createImportItem = new MenuItem { Header = JaLanguage.CreateImportImage };
+                        var createMsgItem = new MenuItem { Header = JaLanguage.CreateMessage };
                         var deleteItem = new MenuItem { Header = JaLanguage.SimpleDelete };
                         var openItem = new MenuItem { Header = JaLanguage.SimpleOpen };
                         var copyItem = new MenuItem { Header = JaLanguage.SimpleCopy };
@@ -680,6 +804,54 @@ public partial class MainPage : Page
                           await ShowContentDialogAsync(Path.GetFullPath(path));
                         };
                         
+                        createMsgItem.Click += (obj, e) =>
+                        {
+                            try
+                            {
+                                if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+                                {
+                                    Window window = new Window();
+                                    window.Height = 100;
+                                    window.Width = 256;
+                                    Grid grid = new Grid();
+                                    TextBox textBox = new TextBox();
+                                    textBox.Height = 32;
+                                    textBox.Width = 256;
+                                    textBox.Text = JaLanguage.SimpleInputName;
+                                    textBox.KeyUp += (obj, e) =>
+                                    {
+                                        if (e.Key == System.Windows.Input.Key.Enter)
+                                        {
+                                            try
+                                            {
+                                                if (!Directory.Exists(Path.GetFullPath(path) + "/Msg/" + textBox.Text))
+                                                {
+                                                    File.WriteAllText(Path.GetFullPath(path) + $"/{textBox.Text}.txt", "");
+                                                    MessageBox.Show(JaLanguage.CreateMessageDir, JaLanguage.CreateMessageDir, MessageBoxButton.OK);
+                                                    
+                                                    ((App)Application.Current).ResetMainPage();
+                                                    window.Close();
+                                                }
+                                            }
+                                            catch (Exception exception)
+                                            {
+                                                _logController.ErrorLog($"Create Message Error{exception}");
+                                                throw;
+                                            }
+                                        }
+                                    };
+                                    grid.Children.Add(textBox);
+                                    window.Content = grid;
+                                    window.Show();
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                _logController.ErrorLog($"Create Message Error{exception}");
+                                throw;
+                            }
+                        };
+                        
                         deleteItem.Click += (obj, e) =>
                         {
                             try
@@ -712,12 +884,23 @@ public partial class MainPage : Page
                         {
                             try
                             {
-                                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                                var extension = Path.GetExtension(Path.GetFullPath(path));
+                                if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".gif")
                                 {
-                                    FileName = Path.GetFullPath(path),
-                                    UseShellExecute = true
-                                });
-                                _logController.InfoLog($"File Open Success {Path.GetFullPath(path)}");
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        FileName = Path.GetFullPath(path),
+                                        UseShellExecute = true
+                                    });
+                                    _logController.InfoLog($"File Open Success {Path.GetFullPath(path)}");
+                                }
+                                else if (extension == ".txt")
+                                {
+                                    string text = File.ReadAllText(Path.GetFullPath(path));
+                                    TextEditWindow textEditWindow = new TextEditWindow(path,text);
+                                    textEditWindow.Owner = Window.GetWindow(this);
+                                    textEditWindow.Show();
+                                }
                             }
                             catch (Exception exception)
                             {
@@ -744,7 +927,8 @@ public partial class MainPage : Page
                                     }
                                     else if (pathExtension == ".txt")
                                     {
-                                        //Clipboard.SetText(File.ReadAllText(Path.GetFullPath(path)));
+                                        string content = File.ReadAllText(Path.GetFullPath(path));
+                                        Clipboard.SetText(File.ReadAllText(Path.GetFullPath(content)));
                                     }
                                 }
                                 _logController.InfoLog($"File Copy Success {Path.GetFullPath(path)}");
@@ -755,11 +939,30 @@ public partial class MainPage : Page
                                 throw;
                             }
                         };
-                        contextMenu.Items.Add(createImportItem);
-                        contextMenu.Items.Add(deleteItem);
-                        contextMenu.Items.Add(openItem);
-                        contextMenu.Items.Add(copyItem);
-                        newItem.ContextMenu = contextMenu;
+                        
+                        var nowPathImage = path.Contains("Image");
+                        var nowPathMsg = path.Contains("Msg");
+                        if (nowPathImage)
+                        {
+                            contextMenu.Items.Add(createImportItem);
+                            contextMenu.Items.Add(deleteItem);
+                            contextMenu.Items.Add(openItem);
+                            contextMenu.Items.Add(copyItem);
+                            newItem.ContextMenu = contextMenu;
+                        }
+                        else if (nowPathMsg)
+                        {
+                            contextMenu.Items.Add(createMsgItem);
+                            contextMenu.Items.Add(deleteItem);
+                            contextMenu.Items.Add(openItem);
+                            contextMenu.Items.Add(copyItem);
+                            newItem.ContextMenu = contextMenu;
+                        }
+                        else
+                        {
+                            contextMenu.Items.Add(deleteItem);
+                            newItem.ContextMenu = contextMenu;
+                        }
                     }
                     break;
             }

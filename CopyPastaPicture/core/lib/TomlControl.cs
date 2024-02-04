@@ -39,7 +39,8 @@ public class TomlControl
                 {
                     ["Width"] = 400,
                     ["Height"] = 100
-                }
+                },
+                ["StartupWindow"] = "true"
             };
 
             using (StreamWriter writer = File.CreateText("./Data/Setting.toml"))
