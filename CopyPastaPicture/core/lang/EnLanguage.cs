@@ -40,4 +40,8 @@ public struct EnLanguage
     public const string SimpleTheme = "Theme";
     public const string Dark = "Dark";
     public const string Light = "Light";
+    public const string CreateMessage = "Create Message";
+    public const string CreateMessageDir = "Create Message Success";
+    public const string CreateImage = "Create Image";
+    public const string CreateImportImage = "Create/Import Image";
 }

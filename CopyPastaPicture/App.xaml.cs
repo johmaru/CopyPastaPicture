@@ -57,6 +57,8 @@ namespace CopyPastaPicture
             EventManager.RegisterClassHandler(typeof(Window), Window.KeyDownEvent, new KeyEventHandler(OnKeyDown), true);
 
            ThemeChange();
+           if (_tomlControl.GetTomlData("StartupWindow") != "true") return;
+           MainWindowShow();
         }
         
         public async Task LoadNotifyIcon()
@@ -92,9 +94,22 @@ namespace CopyPastaPicture
                     
                             MainWindowInstance.Show();
                             MainWindowInstance.Activate();
+                    if (MainWindowInstance.WindowState == WindowState.Minimized)
+                    {
+                        MainWindowInstance.WindowState = WindowState.Normal;
+                    }
+                    else
+                    {
+                        MainWindowInstance.WindowState = WindowState.Minimized;
+                    }
                 }
             };
             _notifyIcon.ContextMenuStrip = _menu;
+        }
+
+        private void MainWindowShow()
+        {
+            MainWindowInstance.Show();
         }
 
         public void ThemeChange()
